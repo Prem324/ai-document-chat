@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import FileUploader from './components/FileUploader';
 import ChatArea from './components/ChatArea';
 import { useDocChat } from './hooks/useDocChat';
 import SplashScreen from './components/SplashScreen';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect } from 'react';
+import { pingServer } from './services/api';
 
 function App() {
   const [input, setInput] = useState('');
@@ -23,11 +23,15 @@ function App() {
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
+    // Wake up the backend immediately on mount
+    pingServer().catch(err => console.log('Server wake-up ping failed:', err));
+
     const timer = setTimeout(() => {
       setShowSplash(false);
     }, 2500); // Show splash for 2.5 seconds
     return () => clearTimeout(timer);
   }, []);
+
 
   const onSendMessage = (e) => {
     e.preventDefault();
